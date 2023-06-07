@@ -1,9 +1,14 @@
 import ContactForm from "./phonebook/contactForm";
 import ContactList from "./contacts/ContactsList";
 import Filter from "./contacts/Filter";
+import { useDispatch } from "react-redux";
+import { getContactsThunk } from "../redux/contactsSlice";
+
 
 function App() {
 
+  const dispatch = useDispatch()
+  
   return (
     <div
       style={{
@@ -23,6 +28,13 @@ function App() {
       <Filter />
 
       <ContactList />
+
+      <button
+        onClick={() => {
+          dispatch(getContactsThunk())
+        }}>
+        thunk
+      </button>
 
     </div>
   );
