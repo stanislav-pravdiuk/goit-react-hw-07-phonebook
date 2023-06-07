@@ -1,8 +1,8 @@
 import { useState } from "react";
 import css from './contact-form.module.css';
-import { addContact } from "redux/contactsSlice";
 import { useDispatch } from "react-redux";
 import { nanoid } from "nanoid";
+import { postContactThunk } from "components/thunk";
 
 function ContactForm() {
 
@@ -22,7 +22,7 @@ function ContactForm() {
         event.preventDefault();
 
         const contact = { id: nanoid(), ...state };
-        dispatch(addContact(contact));
+        dispatch(postContactThunk(contact));
 
         reset();
     };

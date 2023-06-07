@@ -1,6 +1,6 @@
 import { createSlice } from "@reduxjs/toolkit";
 import { Notify } from 'notiflix/build/notiflix-notify-aio';
-import { getContactsThunk } from "components/thunk";
+import { deleteContactThunk, getContactsThunk, postContactThunk } from "components/thunk";
 import { initialState } from "components/initial";
 
 const handlePending = (state) => {
@@ -11,6 +11,19 @@ const handleFulfilled = (state, { payload }) => {
     state.contacts = payload
     state.error = ''
 };
+const postFulfilled = (state, action) => {
+    if (state.contacts.some(contact => contact.name === action.payload.name)) {
+        Notify.warning(`${action.payload.name} is already in contacts`);
+        return;
+    }
+
+    state.contacts = [action.payload, ...state.contacts]
+};
+const deleteFulfilled = (state, action) => {
+    return {
+        contacts: state.contacts.filter(item => item.id !== action.payload)
+    }
+};
 const handleRejected = (state, { payload }) => {
     state.isLoading = false
     state.error = payload
@@ -19,30 +32,32 @@ const handleRejected = (state, { payload }) => {
 const itemSlice = createSlice({
     name: 'contacts',
     initialState: initialState,
-    reducers: {
-        addContact: (state, action) => {
-            if (state.contacts.some(contact => contact.name === action.payload.name)) {
-                Notify.warning(`${action.payload.name} is already in contacts`);
-                return;
-            }
+    // reducers: {
+    //     addContact: (state, action) => {
+    //         if (state.contacts.some(contact => contact.name === action.payload.name)) {
+    //             Notify.warning(`${action.payload.name} is already in contacts`);
+    //             return;
+    //         }
 
-            state.contacts = [action.payload, ...state.contacts]
-                ;
-        },
+    //         state.contacts = [action.payload, ...state.contacts]
+    //             ;
+    //     },
 
-        deleteContact: (state, action) => {
-            return {
-                contacts: state.contacts.filter(item => item.id !== action.payload)
-            }
-        },
+    //     deleteContact: (state, action) => {
+    //         return {
+    //             contacts: state.contacts.filter(item => item.id !== action.payload)
+    //         }
+    //     },
 
-    },
+    // },
 
     extraReducers: (builder) => {
         builder
             .addCase(getContactsThunk.pending, handlePending)
             .addCase(getContactsThunk.fulfilled, handleFulfilled )
-            .addCase(getContactsThunk.rejected, handleRejected )
+            .addCase(getContactsThunk.rejected, handleRejected)
+            .addCase(postContactThunk.fulfilled, postFulfilled)
+            .addCase(deleteContactThunk.fulfilled, deleteFulfilled)
         }
     });
 
