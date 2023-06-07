@@ -1,27 +1,32 @@
-import { createSlice } from "@reduxjs/toolkit";
+import { createSlice, isAnyOf } from "@reduxjs/toolkit";
 import { Notify } from 'notiflix/build/notiflix-notify-aio';
-import { deleteContactThunk, getContactsThunk, postContactThunk } from "components/thunk";
-import { initialState } from "components/initial";
+import { deleteContactThunk, getContactsThunk, postContactThunk } from "services/thunk";
+import { initialState } from "redux/initial";
+
+const arrayRequests = [getContactsThunk, postContactThunk, deleteContactThunk];
+const updateStatus = (status) => {
+    return arrayRequests.map(el => el[status])
+};
 
 const handlePending = (state) => {
     state.isLoading = true
 };
 const handleFulfilled = (state, { payload }) => {
     state.isLoading = false
-    state.contacts = payload
+    state.items = payload
     state.error = ''
 };
 const postFulfilled = (state, action) => {
-    if (state.contacts.some(contact => contact.name === action.payload.name)) {
+    if (state.items.some(contact => contact.name === action.payload.name)) {
         Notify.warning(`${action.payload.name} is already in contacts`);
         return;
     }
 
-    state.contacts = [action.payload, ...state.contacts]
+    state.items = [action.payload, ...state.items]
 };
 const deleteFulfilled = (state, action) => {
     return {
-        contacts: state.contacts.filter(item => item.id !== action.payload)
+        items: state.items.filter(item => item.id !== action.payload)
     }
 };
 const handleRejected = (state, { payload }) => {
@@ -32,34 +37,14 @@ const handleRejected = (state, { payload }) => {
 const itemSlice = createSlice({
     name: 'contacts',
     initialState: initialState,
-    // reducers: {
-    //     addContact: (state, action) => {
-    //         if (state.contacts.some(contact => contact.name === action.payload.name)) {
-    //             Notify.warning(`${action.payload.name} is already in contacts`);
-    //             return;
-    //         }
-
-    //         state.contacts = [action.payload, ...state.contacts]
-    //             ;
-    //     },
-
-    //     deleteContact: (state, action) => {
-    //         return {
-    //             contacts: state.contacts.filter(item => item.id !== action.payload)
-    //         }
-    //     },
-
-    // },
-
     extraReducers: (builder) => {
         builder
-            .addCase(getContactsThunk.pending, handlePending)
-            .addCase(getContactsThunk.fulfilled, handleFulfilled )
-            .addCase(getContactsThunk.rejected, handleRejected)
+            .addCase(getContactsThunk.fulfilled, handleFulfilled)
             .addCase(postContactThunk.fulfilled, postFulfilled)
             .addCase(deleteContactThunk.fulfilled, deleteFulfilled)
+            .addMatcher(isAnyOf(...updateStatus('pending')), handlePending)
+            .addMatcher(isAnyOf(...updateStatus('rejected')), handleRejected)
         }
     });
 
 export const phonebookReducer = itemSlice.reducer;
-export const { addContact, deleteContact } = itemSlice.actions;

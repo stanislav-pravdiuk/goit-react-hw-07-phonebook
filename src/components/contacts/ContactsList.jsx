@@ -1,14 +1,12 @@
 import React from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { getFilteredContacts } from "redux/selectors";
-import { deleteContact } from "redux/contactsSlice";
-import { deleteContactThunk } from "components/thunk";
+import { deleteContactThunk } from "services/thunk";
 
 function ContactList() {
 
         const dispatch = useDispatch();
         const contacts = useSelector(getFilteredContacts);
-
         return (
                 <ul>
                         {contacts.map((el) =>

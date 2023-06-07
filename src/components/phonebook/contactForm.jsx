@@ -2,7 +2,7 @@ import { useState } from "react";
 import css from './contact-form.module.css';
 import { useDispatch } from "react-redux";
 import { nanoid } from "nanoid";
-import { postContactThunk } from "components/thunk";
+import { postContactThunk } from "services/thunk";
 
 function ContactForm() {
 
