@@ -1,15 +1,19 @@
-import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
+import { createSlice } from "@reduxjs/toolkit";
 import { Notify } from 'notiflix/build/notiflix-notify-aio';
-import { getContacts } from "../components/getContacts";
+import { getContactsThunk } from "components/thunk";
+import { initialState } from "components/initial";
 
-export const getContactsThunk = createAsyncThunk('contacts/fetchAll', async () => {
-    return await getContacts()
-} )
-
-const initialState = {
-    contacts: [],
-    isLoading: false,
-    error: '',
+const handlePending = (state) => {
+    state.isLoading = true
+};
+const handleFulfilled = (state, { payload }) => {
+    state.isLoading = false
+    state.contacts = payload
+    state.error = ''
+};
+const handleRejected = (state, { payload }) => {
+    state.isLoading = false
+    state.error = payload
 };
 
 const itemSlice = createSlice({
@@ -31,34 +35,16 @@ const itemSlice = createSlice({
                 contacts: state.contacts.filter(item => item.id !== action.payload)
             }
         },
-        // fetching: (state) => {
-        //     state.isLoading = true
-        // },
-        // fetchSuccess: (state, { payload }) => {
-        //     state.isLoading = false
-        //     state.contacts = payload
-        //     state.error = ''
-        // },
-        // fetchError: (state, { payload }) => {
-        //     state.isLoading = false
-        //     state.error = payload
-        // },
+
     },
-    extraReducers: {
-        [getContactsThunk.pending]: (state) => {
-            state.isLoading = true
-        },
-        [getContactsThunk.fulfilled]: (state, { payload }) => {
-            state.isLoading = false
-            state.contacts = payload
-            state.error = ''
-        },
-        [getContactsThunk.rejected]: (state, { payload }) => {
-            state.isLoading = false
-            state.error = payload
-        },
-        },
+
+    extraReducers: (builder) => {
+        builder
+            .addCase(getContactsThunk.pending, handlePending)
+            .addCase(getContactsThunk.fulfilled, handleFulfilled )
+            .addCase(getContactsThunk.rejected, handleRejected )
+        }
     });
 
 export const phonebookReducer = itemSlice.reducer;
-export const { addContact, deleteContact, fetching, fetchSuccess, fetchError } = itemSlice.actions;
+export const { addContact, deleteContact } = itemSlice.actions;
