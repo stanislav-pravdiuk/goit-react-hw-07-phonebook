@@ -1,7 +1,7 @@
 import { createSlice, isAnyOf } from "@reduxjs/toolkit";
 import { Notify } from 'notiflix/build/notiflix-notify-aio';
 import { deleteContactThunk, getContactsThunk, postContactThunk } from "services/thunk";
-import { initialState } from "redux/initialState";
+import { initialState } from "redux/contacts/initialState";
 
 const STATUS = {
     PENDING: 'pending',
@@ -47,7 +47,7 @@ const handleRejected = (state, {error}) => {
     state.error = error.message
 };
 
-const itemSlice = createSlice({
+const itemsSlice = createSlice({
     name: 'contacts',
     initialState: initialState,
     extraReducers: (builder) => {
@@ -62,4 +62,4 @@ const itemSlice = createSlice({
         }
     });
 
-export const phonebookReducer = itemSlice.reducer;
+export const itemsReducer = itemsSlice.reducer;

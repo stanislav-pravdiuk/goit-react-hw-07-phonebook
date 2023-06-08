@@ -1,13 +1,14 @@
 import ContactForm from "./phonebook/contactForm";
 import ContactList from "./contacts/ContactsList";
 import Filter from "./contacts/Filter";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { getContactsThunk } from "services/thunk";
 import { useEffect } from "react";
 
 
 function App() {
 
+  const { items, isLoading, error } = useSelector((state) => state.contacts)
 
   const dispatch = useDispatch()
 
@@ -33,7 +34,9 @@ function App() {
       <h2>Contacts</h2>
       <Filter />
 
-      <ContactList />
+      {isLoading&& <h2>Loading</h2>}
+      {items&& <ContactList />}
+      {error&& <h2>{error}</h2>}
 
     </div>
   );
