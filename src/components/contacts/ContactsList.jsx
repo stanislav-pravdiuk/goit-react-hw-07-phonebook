@@ -7,15 +7,20 @@ function ContactList() {
 
         const dispatch = useDispatch();
         const contacts = useSelector(getFilteredContacts);
-        return (
-                <ul>
-                        {contacts.map((el) =>
-                                <li key={el.id}>
-                                        <span>{el.name} {el.number}</span>
-                                        <button onClick={() => dispatch(deleteContactThunk(el.id))}>Delete</button>
-                                </li>)}
-                </ul>
-        );
+
+        if (contacts.length !== 0) {
+                return (
+                        <ul>
+                                {contacts.map((el) =>
+                                        <li key={el.id}>
+                                                <span>{el.name} {el.number}</span>
+                                                <button onClick={() => dispatch(deleteContactThunk(el.id))}>Delete</button>
+                                        </li>)}
+                        </ul>
+                );
+        };
+        
+        return <p>No contacts found</p>
 };
 
 export default ContactList;

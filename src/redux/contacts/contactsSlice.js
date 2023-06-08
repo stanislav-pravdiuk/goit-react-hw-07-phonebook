@@ -18,7 +18,7 @@ const handlePending = (state) => {
     state.isLoading = true
 };
 
-const handleFulfilled = (state, { payload }) => {
+const handleFulfilled = (state) => {
     state.isLoading = false
     state.error = ''
 };

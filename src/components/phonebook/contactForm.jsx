@@ -1,7 +1,6 @@
 import { useState } from "react";
 import css from './contact-form.module.css';
 import { useDispatch } from "react-redux";
-import { nanoid } from "nanoid";
 import { postContactThunk } from "services/thunk";
 
 function ContactForm() {
@@ -20,14 +19,7 @@ function ContactForm() {
 
     function handleSubmit(event) {
         event.preventDefault();
-
-        const contact = { id: nanoid(), ...state };
-        dispatch(postContactThunk(contact));
-
-        reset();
-    };
-
-    function reset() {
+        dispatch(postContactThunk(state));
         setState({ name: '', number: '', });
     };
     
